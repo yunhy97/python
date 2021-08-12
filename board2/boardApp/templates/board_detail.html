@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+    <script>
+        $(document).ready(function(){
+            //게시물 상세조회 function 호출
+            detail();
+            //게시물 상세조회 ajax
+            function detail(){
+                $("#post_detail").html("")
+                $.ajax({
+                    type: "GET",
+                    url: "/boardDetail/{{ pk }}/",
+                    async: true,
+                    success: function(data) {
+                        console.log(data);
+                        var str = "";
+                        str +="<tr><td>"+data[0].pk+"</td>";
+                        str +="<td>"+data[0].fields.title+"</td>";
+                        str +="<td>"+data[0].fields.content+"</td>";
+                        str +="<td>"+data[0].fields.author+"</td>";
+                        str +="<td>"+data[0].fields.regdate+"</td></tr>";
+                        $("#post_detail").html(str);
+
+                        var title = $("#title").val(data[0].fields.title);
+                        var content = $("#content").val(data[0].fields.content);
+                        var author =  $("#author").val(data[0].fields.author);
+                    }
+                })
+            };
+
+            //update 버튼클릭 시 수정정보 저장 ajax
+            $("#update").click(function(){
+                var title = $("#title").val();
+                var content = $("#content").val();
+                var author =  $("#author").val();
+
+                var result = confirm("수정하시겠습니까?");
+                if(result == true) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/boardUpdate/{{ pk }}/",
+                        data:{
+                            "title":title,
+                            "content":content,
+                            "author":author,
+                        },
+                        success: function(data) {
+                            console.log(data);
+                        }
+                    });
+                    detail();
+                } else {
+                    alert("취소 합니다");
+                    return;
+                }
+            });
+
+            //delete 버튼클릭 시 해당 게시물 삭제 ajax
+            $("#delete").click(function(){
+                var result = confirm("삭제하시겠습니까?");
+                if(result == true) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/boardDelete/{{ pk }}/",
+                        success: function(data) {
+                            console.log(data);
+                            location.href = "/boardView/";
+                        }
+                    });
+                } else {
+                    alert("취소 합니다");
+                    return;
+                }
+            });
+        })
+    </script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>no</th>
+                            <th>title</th>
+                            <th>content</th>
+                            <th>author</th>
+                            <th>regdate</th>
+                        </tr>
+                    </thead>
+                    <tbody id="post_detail">
+                        <!-- 게시물 상세조회 내용 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+         <div class="row">
+            <div class="col-12 ">
+                <!--입력폼-->
+                <table class="table table-striped ">
+                    <tbody>
+                        <tr>
+                            <th>title</th>
+                            <td><input type="text" class="form-control" id="title"></td>
+                        </tr>
+                        <tr>
+                            <th>content</th>
+                            <td><input type="text" class="form-control" id="content"></td>
+                        </tr>
+                        <tr>
+                            <th>author</th>
+                            <td><input type="text" class="form-control" id="author"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--입력폼 끝-->
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <!--delete(삭제) 버튼-->
+                <a type="button" class="btn btn-danger" id="delete">delete</a>
+                <!--update(수정) 버튼
+                    위에 입력폼에 내용을 수정하고 클릭하면 반영됨-->
+                <a type="button" class="btn btn-info" id="update">update</a>
+                <!--list(목록) 버튼
+                    게시물 목록 페이지로 이동("post_list.html")-->
+                <a href="/boardView/" type="button" class="btn btn-success">list</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

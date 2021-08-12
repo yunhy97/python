@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+    <script>
+        $(document).ready(function(){
+            //게시물 목록조회 ajax
+            $("#board_list").html("")
+            $.ajax({
+                type: "GET",
+                url: "{% url 'list' %}",
+                dataType: 'json',
+                success: function(data) {
+                    var str = "";
+                    for(var i=0; i<data.length; i++){
+                        var item = data[i];
+                        str +="<tr><td>"+item.pk+"</td>";
+                        str +="<td><a name='title' href='/detailView/"+item.pk+"' data-id='"+item.pk+"'>"+item.fields.title+"</a></td>";
+                        str +="<td>"+item.fields.author+"</td>";
+                        str +="<td>"+item.fields.regdate+"</td></tr>";
+
+                        $("#board_list").html(str);
+                    }
+                }
+            });
+        })
+    </script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-striped">
+                    <thead>
+                        <th>no</th>
+                        <th>title</th>
+                        <th>author</th>
+                        <th>date</th>
+                    </thead>
+                    <tbody id="board_list">
+                        <!-- 게시물 목록조회 내용 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <!--create(생성) 버튼
+                    게시물 등록 페이지로 이동("post_form.html")-->
+                <a href="{% url 'createView' %}" type="button" class="btn btn-primary">Create</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
